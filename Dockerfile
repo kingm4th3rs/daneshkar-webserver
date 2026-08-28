@@ -2,9 +2,9 @@ FROM docker.arvancloud.ir/python:3.14-slim
 
 WORKDIR /app
 
-COPY requrements.txt ./
+COPY requirements.txt ./
 
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY main.py ./
 
