@@ -1,0 +1,31 @@
+name: Build and Test FastAPI
+
+on:
+  push:
+    branches: [ "master"]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: docker build -t daneshkar-webserver .
+
+      - name: Test the container
+        env:
+          APP_SECRET: ${{ secrets.APP_SECRET }}
+        run: |
+          docker run -d -p 8000:8000 -e APP_SECRET="$APP_SECRET" --name test-container daneshkar-webserver
+          sleep 5
+          echo "Testing /health endpoint..."
+          curl --fail http://localhost:8000/health
+          echo -e "\nTesting / endpoint..."
+          curl --fail http://localhost:8000/
+          docker stop test-container
